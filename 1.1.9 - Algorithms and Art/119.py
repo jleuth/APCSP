@@ -9,6 +9,8 @@ rows = 25
 cols = 40
 start_x = -cols * dot_size
 start_y = rows * dot_size
+current_size = dot_size
+anim_steps = 5
 
 dot_drawer = trtl.Turtle()
 dot_drawer.speed(0)
@@ -47,19 +49,24 @@ stamp_turtle.speed(0)
 stamp_turtle.shape("circle")
 
 for i in range(4000):
-    # Select a random row and column
     rand_row = rand.randint(0, rows - 1)
     rand_col = rand.randint(0, cols - 1)
 
-    # Calculate the coordinates of the selected dot
     selected_x = start_x + rand_col * (dot_size * 2)
     selected_y = start_y - rand_row * (dot_size * 2)
 
-    # Draw a new dot of a different size at the same location (no erase step)
     new_dot_size = rand.randint(dot_size + 2, dot_size * 3)
+    
+    # Animate the size change
+    current_size = dot_size
+    steps = 5  # fewer steps = faster animation
+    size_increment = (new_dot_size - current_size) / steps
+    
     stamp_turtle.goto(selected_x, selected_y)
-    stamp_turtle.shapesize(new_dot_size / 20.0)  # shapesize is diameter/20
-    stamp_turtle.stamp()
+    for step in range(steps):
+        current_size += size_increment
+        stamp_turtle.shapesize(current_size / 20.0)
+        stamp_turtle.stamp()
 # -------------------------------------
 
 
