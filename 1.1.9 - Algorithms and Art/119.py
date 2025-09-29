@@ -1,3 +1,4 @@
+import select
 import turtle as trtl
 import random as rand
 
@@ -48,25 +49,32 @@ stamp_turtle.penup()
 stamp_turtle.speed(0)
 stamp_turtle.shape("circle")
 
-for i in range(4000):
-    rand_row = rand.randint(0, rows - 1)
-    rand_col = rand.randint(0, cols - 1)
+for i in range(400):
 
-    selected_x = start_x + rand_col * (dot_size * 2)
-    selected_y = start_y - rand_row * (dot_size * 2)
+    dots_to_change = [] # Dots in queue to be resized
 
-    new_dot_size = rand.randint(dot_size + 2, dot_size * 3)
-    
+    for _ in range(5): # we change 5 dots at once
+        rand_row = rand.randint(0, rows - 1)
+        rand_col = rand.randint(0, cols - 1)
+
+        selected_x = start_x + rand_col * (dot_size * 2)
+        selected_y = start_y - rand_row * (dot_size * 2)
+
+        new_dot_size = rand.randint(dot_size + 2, dot_size * 3)
+        dots_to_change.append((selected_x, selected_y, new_dot_size))
+        
     # Animate the size change
     current_size = dot_size
     steps = 5  # fewer steps = faster animation
     size_increment = (new_dot_size - current_size) / steps
-    
+        
     stamp_turtle.goto(selected_x, selected_y)
     for step in range(steps):
-        current_size += size_increment
-        stamp_turtle.shapesize(current_size / 20.0)
-        stamp_turtle.stamp()
+        for x, y, target_size in dots_to_change: # Change multiple dots at a time for a better animation
+            current_size = dot_size + (target_size - dot_size) * (step + 1) / steps
+            stamp_turtle.goto(x, y)
+            stamp_turtle.shapesize(current_size / 20.0)
+            stamp_turtle.stamp()
 # -------------------------------------
 
 
