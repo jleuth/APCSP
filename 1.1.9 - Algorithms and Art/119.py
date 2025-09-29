@@ -33,7 +33,7 @@ for row in range(rows):
 
 dot_drawer.screen.update()  # Update the screen once after all dots are drawn
 dot_drawer.speed(10) #we want to see it being drawn
-dot_drawer.screen.tracer(1, 0) #this re-enables animation
+dot_drawer.screen.tracer(5, 0) #this re-enables animation
 
 # -------------------------------------
 
