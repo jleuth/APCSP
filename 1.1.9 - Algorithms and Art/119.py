@@ -1,68 +1,40 @@
 import turtle as trtl
-import random as rand
+import PIL as Image
 
-# -------------------------------------
+# -----------------------
 # Config
+target_width = 480 # 480p
+target_height = 270
+dot_spacing = 4  # pixels between dot centers
 
-dot_size = 5
-rows = 25
-cols = 40
-start_x = -cols * dot_size
-start_y = rows * dot_size
+# Load and resize image
+img = Image.open("img.jpg") #placeholder for now
+img = img.resize((target_width, target_height))
+img = img.convert("L")  # Convert to grayscale
 
-# Track current size of each dot
-dot_sizes = [[dot_size for _ in range(cols)] for _ in range(rows)]
+# Get image dimensions for centering
+start_x = -(target_width * dot_spacing) // 2
+start_y = (target_height * dot_spacing) // 2
 
+# -----------------------
+# Init turtle
+
+screen = trtl.Screen()
+screen.setup(width=target_width * dot_spacing + 100, height=target_height * dot_spacing + 100)
 dot_drawer = trtl.Turtle()
 dot_drawer.speed(0)
 dot_drawer.penup()
 dot_drawer.hideturtle()
-dot_drawer.screen.tracer(0, 0)
-# -------------------------------------
+screen.tracer(0, 0) # Instant
 
-# Draw the grid
-for row in range(rows):
-    y = start_y - row * (dot_size * 2)
-    for col in range(cols):
-        x = start_x + col * (dot_size * 2)
-        dot_drawer.goto(x, y)
-        dot_drawer.dot(dot_size)
+# -----------------------
+# Draw image in halftone style
 
-dot_drawer.screen.update()
-dot_drawer.screen.tracer(5, 0)
+for row in range(target_height):
+    y = start_y - row * dot_spacing 
+    for col in range(target_width):
+        x = start_x - col * dot_spacing
 
-stamp_turtle = trtl.Turtle()
-stamp_turtle.hideturtle()
-stamp_turtle.penup()
-stamp_turtle.speed(0)
-stamp_turtle.shape("circle")
+        brightness = img.getpixel((col, row))
 
-# Ripple loop
-for i in range(100):
-    rand_row = rand.randint(0, rows - 1)
-    rand_col = rand.randint(0, cols - 1)
-    
-    # Get surrounding dots
-    for dr in [-1, 0, 1]:
-        for dc in [-1, 0, 1]:
-            if dr == 0 and dc == 0:
-                continue
-            r = rand_row + dr
-            c = rand_col + dc
-            if 0 <= r < rows and 0 <= c < cols:
-                # Get current size and multiply it
-                current = dot_sizes[r][c]
-                new_size = current * rand.uniform(0.8, 1.5)  # Random factor
-                dot_sizes[r][c] = new_size
-                
-                x = start_x + c * (dot_size * 2)
-                y = start_y - r * (dot_size * 2)
-                stamp_turtle.goto(x, y)
-                stamp_turtle.shapesize(new_size / 20.0)
-                stamp_turtle.stamp()
-
-# Request to a model to write a poem about the abstract art
-
-
-wn = trtl.Screen()
-wn.mainloop()
+        dot_size = ((255 - brightness) / 255) * dot_spacing * 0.9 # Some weird ass brightness mapping and inversion
