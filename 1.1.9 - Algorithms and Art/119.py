@@ -3,12 +3,12 @@ import PIL as Image
 
 # -----------------------
 # Config
-target_width = 480 # 480p
-target_height = 270
+target_width = 120 # 480p
+target_height = 68
 dot_spacing = 4  # pixels between dot centers
 
 # Load and resize image
-img = Image.open("img.jpg") #placeholder for now
+img = Image.open("~/Downloads/ada.jpg") #placeholder for now
 img = img.resize((target_width, target_height))
 img = img.convert("L")  # Convert to grayscale
 
@@ -37,4 +37,7 @@ for row in range(target_height):
 
         brightness = img.getpixel((col, row))
 
-        dot_size = ((255 - brightness) / 255) * dot_spacing * 0.9 # Some weird ass brightness mapping and inversion
+        dot_size = ((255 - brightness) / 255) * dot_spacing * 0.9 # Some weird ass brightness mapping and inversion so that darker = bigger dot and vice versa.
+
+screen.update()
+screen.mainloop()
