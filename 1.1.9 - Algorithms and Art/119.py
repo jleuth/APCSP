@@ -2,19 +2,22 @@ import turtle as trtl
 from PIL import Image
 import requests
 import json
+from dotenv import load_dotenv
+import os
 
 # -----------------------
 # Config
+load_dotenv()
 target_width = 120 
 target_height = 68
 dot_spacing = 4  # pixels between dot CENTERS
 
-path = ''
-
-# Load and resize image
-img = Image.open(path)
-img = img.resize((target_width, target_height))
-img = img.convert("L")  # Convert to grayscale
+def loadImg(path):
+    # Load and resize image
+    img = Image.open(path)
+    img = img.resize((target_width, target_height))
+    img = img.convert("L")  # Convert to grayscale
+    return img
 
 # Get image dimensions for centering (adjusted for turtle coordinates)
 start_x = -(target_width * dot_spacing) // 2
@@ -22,10 +25,10 @@ start_y = (target_height * dot_spacing) // 2
 
 # -----------------------
 # Image gen if chosen. THIS CODE COPIED FROM https://openrouter.ai/docs/features/multimodal/image-generation
-def genImg():
+def genImg(prompt):
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
-        "Authorization": f"Bearer {API_KEY_REF}",
+        "Authorization": f"Bearer {os.getenv("OR_KEY")}",
         "Content-Type": "application/json"
     }
 
@@ -34,7 +37,7 @@ def genImg():
         "messages": [
             {
                 "role": "user",
-                "content": "Generate a beautiful sunset over mountains"
+                "content": prompt
             }
         ],
         "modalities": ["image", "text"]
@@ -50,6 +53,7 @@ def genImg():
             for image in message["images"]:
                 image_url = image["image_url"]["url"]  # Base64 data URL
                 print(f"Generated image: {image_url[:50]}...")
+                
 
 # -----------------------
 
@@ -85,6 +89,14 @@ def drawer():
 # -----------------------
 
 
+# Prompt the user for an image path
+image_path = input('Enter the path to the image file (or type "AI" to generate one): ')
+if image_path.strip().upper() == "AI":
+    # Prompt for a text prompt to generate an image
+    prompt = input("Enter a prompt for the AI-generated image: ")
+    image_path = genImg(prompt)  # You must define this function elsewhere
+
+img = loadImg(image_path)
 wn, dot_drawer = initTurtle()
 drawer()
 wn.update()
