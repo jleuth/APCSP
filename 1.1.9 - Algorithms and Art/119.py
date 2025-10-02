@@ -10,8 +10,14 @@ import os
 # -----------------------
 # Config
 load_dotenv()
-target_width = 120 
-target_height = 68
+
+supported_resoltions = [
+    (120, 68), #horizontal
+    (100, 100), #square
+    (120, 80), #vertical
+]
+
+default_resolution = supported_resoltions[1]
 dot_spacing = 4  # pixels between dot CENTERS
 
 # Make the dots a little bigger by increasing the multiplier
@@ -20,14 +26,18 @@ dot_size_multiplier = 1.3
 def loadImg(path):
     # Load and resize image
     img = Image.open(path)
+    width, height = img.size 
+    if width > height: #this helps us accurately resize the image to the correct aspect ratio
+        target_width, target_height = supported_resoltions[0]
+    elif width < height:
+        target_width, target_height = supported_resoltions[2]
+    else:
+        target_width, target_height = default_resolution
+    print(width, height)
+    print(target_width, target_height)
     img = img.resize((target_width, target_height))
     img = img.convert("L")  # Convert to grayscale
-    return img
-
-# Get image dimensions for centering (adjusted for turtle coordinates)
-start_x = -(target_width * dot_spacing) // 2
-start_y = (target_height * dot_spacing) // 2
-print(str(os.getenv("GEMINI")))
+    return img, target_width, target_height
 
 # -----------------------
 # Image gen if chosen. THIS CODE COPIED FROM https://ai.google.dev/gemini-api/docs/image-generation
@@ -91,7 +101,12 @@ if image_path.strip().upper() == "AI":
     image_path = genImg(prompt)
     
 
-img = loadImg(image_path)
+img, target_width, target_height = loadImg(image_path)
+
+# Get image dimensions for centering (adjusted for turtle coordinates)
+start_x = -(target_width * dot_spacing) // 2
+start_y = (target_height * dot_spacing) // 2
+
 wn, dot_drawer = initTurtle()
 drawer()
 wn.update()
