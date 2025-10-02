@@ -30,7 +30,7 @@ start_y = (target_height * dot_spacing) // 2
 print(str(os.getenv("GEMINI")))
 
 # -----------------------
-# Image gen if chosen. THIS CODE COPIED FROM https://openrouter.ai/docs/features/multimodal/image-generation
+# Image gen if chosen. THIS CODE COPIED FROM https://ai.google.dev/gemini-api/docs/image-generation
 def genImg(prompt):
     client = genai.Client(api_key=(str(os.getenv("GEMINI"))))
 
